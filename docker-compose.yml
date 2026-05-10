@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - CLICKUP_API_KEY=${CLICKUP_API_KEY}
+      - CLICKUP_TEAM_ID=${CLICKUP_TEAM_ID}
+      - CLICKUP_SPACE_ID=${CLICKUP_SPACE_ID}
+      - INFOBIP_API_KEY=${INFOBIP_API_KEY}
+      - INFOBIP_API=${INFOBIP_API}
+      - WHATSAPP_SENDER=${WHATSAPP_SENDER}
+      - PORT=5000
+    volumes:
+      - ./:/app
+      - /tmp/whatsapp_messages.db:/tmp/whatsapp_messages.db
+    command: python -m flask run --host=0.0.0.0 --port=5000

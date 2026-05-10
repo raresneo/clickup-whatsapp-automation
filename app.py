@@ -16,16 +16,24 @@ import os
 
 app = Flask(__name__)
 
-# Credentials
-CLICKUP_API_KEY = "pk_182698591_O1HWVO7Z9TM1KRC8ILCQLNPJ3IXWAP5P"
+# Credentials (from environment variables)
+CLICKUP_API_KEY = os.getenv('CLICKUP_API_KEY')
 CLICKUP_API = "https://api.clickup.com/api/v2"
 
-INFOBIP_API_KEY = "7a3d30a4798c18a1054edfd356ca0ca6-ed5080d0-4b51-4b34-9817-35b94cc8982f"
-INFOBIP_API = "https://8v45x1.api.infobip.com"
-WHATSAPP_SENDER = "+44 7860 088970"
+INFOBIP_API_KEY = os.getenv('INFOBIP_API_KEY')
+INFOBIP_API = os.getenv('INFOBIP_API', "https://8v45x1.api.infobip.com")
+WHATSAPP_SENDER = os.getenv('WHATSAPP_SENDER', "+44 7860 088970")
 
-TEAM_ID = "90151068705"
-SPACE_ID = "90157253012"
+TEAM_ID = os.getenv('CLICKUP_TEAM_ID')
+SPACE_ID = os.getenv('CLICKUP_SPACE_ID')
+
+# Validate required env vars
+if not CLICKUP_API_KEY:
+    raise ValueError("CLICKUP_API_KEY environment variable not set")
+if not INFOBIP_API_KEY:
+    raise ValueError("INFOBIP_API_KEY environment variable not set")
+if not TEAM_ID:
+    raise ValueError("CLICKUP_TEAM_ID environment variable not set")
 
 # Database setup
 def init_db():
