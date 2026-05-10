@@ -12,6 +12,7 @@ import sqlite3
 import threading
 from threading import Thread
 import time
+import os
 
 app = Flask(__name__)
 
@@ -320,16 +321,16 @@ def send_manual():
 def health():
     return jsonify({"status": "ok"}), 200
 
+# Initialize database on startup
+init_db()
+
+# Start automation thread
+automation_thread = Thread(target=run_automation, daemon=True)
+automation_thread.start()
+
 if __name__ == "__main__":
-    # Initialize database
-    init_db()
-    
-    # Start automation thread
-    automation_thread = Thread(target=run_automation, daemon=True)
-    automation_thread.start()
-    
     print("✅ WhatsApp Automation Started")
     print("🌐 Dashboard: http://localhost:7777/dashboard")
     print("🪝 Webhook: http://localhost:7777/webhook/whatsapp")
     
-    app.run(host='0.0.0.0', port=7777, debug=False)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)
