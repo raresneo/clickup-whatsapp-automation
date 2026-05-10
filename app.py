@@ -249,6 +249,11 @@ def run_automation():
             time.sleep(60)
 
 # Flask Routes
+@app.route('/')
+def index():
+    """Root route - redirect to dashboard"""
+    return jsonify({"status": "ok", "message": "WhatsApp Automation API", "endpoints": {"/health": "Health check", "/dashboard": "View conversations", "/webhook/whatsapp": "Infobip webhook", "/send": "Send manual message"}}), 200
+
 @app.route('/webhook/whatsapp', methods=['POST'])
 def whatsapp_webhook():
     """Receive WhatsApp messages from Infobip"""
