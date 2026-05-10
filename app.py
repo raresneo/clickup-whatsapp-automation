@@ -219,6 +219,9 @@ def run_automation():
     """Main automation loop"""
     print("🤖 Automation Started")
     
+    # Wait 10s before first run to avoid blocking app startup
+    time.sleep(10)
+    
     while True:
         try:
             print(f"\n[{datetime.now().strftime('%H:%M:%S')}] Checking tasks...")
