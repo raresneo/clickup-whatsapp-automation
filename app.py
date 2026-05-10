@@ -17,23 +17,25 @@ import os
 app = Flask(__name__)
 
 # Credentials (from environment variables)
-CLICKUP_API_KEY = os.getenv('CLICKUP_API_KEY')
+CLICKUP_API_KEY = os.getenv('CLICKUP_API_KEY', '')
 CLICKUP_API = "https://api.clickup.com/api/v2"
 
-INFOBIP_API_KEY = os.getenv('INFOBIP_API_KEY')
+INFOBIP_API_KEY = os.getenv('INFOBIP_API_KEY', '')
 INFOBIP_API = os.getenv('INFOBIP_API', "https://8v45x1.api.infobip.com")
 WHATSAPP_SENDER = os.getenv('WHATSAPP_SENDER', "+44 7860 088970")
 
-TEAM_ID = os.getenv('CLICKUP_TEAM_ID')
-SPACE_ID = os.getenv('CLICKUP_SPACE_ID')
+TEAM_ID = os.getenv('CLICKUP_TEAM_ID', '')
+SPACE_ID = os.getenv('CLICKUP_SPACE_ID', '')
 
-# Validate required env vars
+# Log warnings if credentials missing (but don't crash)
 if not CLICKUP_API_KEY:
-    raise ValueError("CLICKUP_API_KEY environment variable not set")
+    print("⚠️  WARNING: CLICKUP_API_KEY not set - automation will not work")
 if not INFOBIP_API_KEY:
-    raise ValueError("INFOBIP_API_KEY environment variable not set")
+    print("⚠️  WARNING: INFOBIP_API_KEY not set - WhatsApp sending will not work")
 if not TEAM_ID:
-    raise ValueError("CLICKUP_TEAM_ID environment variable not set")
+    print("⚠️  WARNING: CLICKUP_TEAM_ID not set - task fetching will not work")
+
+print("✅ App initialized successfully")
 
 # Database setup
 def init_db():
@@ -97,6 +99,10 @@ def get_conversations():
 def get_all_tasks():
     """Get all tasks from ClickUp"""
     try:
+        if not CLICKUP_API_KEY or not TEAM_ID:
+            print("⚠️  Skipping task fetch: missing CLICKUP_API_KEY or CLICKUP_TEAM_ID")
+            return []
+        
         url = f"{CLICKUP_API}/team/{TEAM_ID}/task"
         headers = {"Authorization": CLICKUP_API_KEY}
         
@@ -150,6 +156,10 @@ def extract_client_name(task):
 def send_whatsapp_message(to_number, message, task_id=None):
     """Send WhatsApp message via Infobip"""
     try:
+        if not INFOBIP_API_KEY:
+            print("⚠️  Skipping send: missing INFOBIP_API_KEY")
+            return False
+        
         url = f"{INFOBIP_API}/whatsapp/1/message/send"
         
         headers = {
